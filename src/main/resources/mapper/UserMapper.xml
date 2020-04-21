@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.centerm.nettydecode.dao.UserDao">
+    <select id="findByUsername" resultType="com.centerm.nettydecode.pojo.User" parameterType="string">
+        SELECT admin.user.*
+        FROM admin.user
+        WHERE admin.user.username=#{username}
+    </select>
+</mapper>

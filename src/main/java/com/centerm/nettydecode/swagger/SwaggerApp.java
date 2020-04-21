@@ -19,8 +19,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerApp {
+
     @Bean
-    public Docket createRestApi(){
+    public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
@@ -29,7 +30,7 @@ public class SwaggerApp {
                 .build();
     }
 
-    private ApiInfo apiInfo(){
+    private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Swagger2构建RESTful API")
                 .contact(new Contact("Sheva", "https://github.com/sheva596/decode-netty", "1049621663@qq.com"))
@@ -37,4 +38,5 @@ public class SwaggerApp {
                 .description("API描述")
                 .build();
     }
+
 }

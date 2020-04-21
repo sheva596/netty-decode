@@ -17,13 +17,10 @@ public class ServerHandlerInit extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline pipeline = socketChannel.pipeline();
-
         pipeline.addLast("responseEncoder", new HttpResponseEncoder());
         pipeline.addLast("requestDecode", new HttpRequestDecoder());
-
         pipeline.addLast("objectAggregator", new HttpObjectAggregator(1024));
         pipeline.addLast("contentCompressor", new HttpContentCompressor());
-
         pipeline.addLast("httpServerHandler", new HttpServerHandler());
     }
 }
