@@ -1,4 +1,4 @@
-package com.centerm.nettydecode.swagger;
+package com.centerm.nettydecode.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @Configuration
 @EnableSwagger2
-public class SwaggerApp {
+public class SwaggerConfig {
 
     @Bean
     public Docket createRestApi() {
