@@ -8,6 +8,8 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author Sheva
  * @date 2020/4/20 10:14
@@ -21,6 +23,6 @@ public class ServerHandlerInit extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("requestDecode", new HttpRequestDecoder());
         pipeline.addLast("objectAggregator", new HttpObjectAggregator(1024));
         pipeline.addLast("contentCompressor", new HttpContentCompressor());
-        pipeline.addLast("httpServerHandler", new HttpServerHandler());
+        pipeline.addLast("httpServerHandler", new HttpServerHandler(new AtomicInteger(0)));
     }
 }

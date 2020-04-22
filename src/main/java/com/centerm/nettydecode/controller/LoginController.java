@@ -32,13 +32,11 @@ public class LoginController {
     @CrossOrigin
     @PostMapping("api/login")
     @ResponseBody
-
     public Result login(@RequestBody User reqUser){
         String username = reqUser.getUsername();
         username = HtmlUtils.htmlEscape(username);
         User user = userService.findByUsername(username);
-
-        log.info(user.getPassword());
+        log.info("数据库查询结果： " + user.toString());
         if (!Objects.equals(user.getUsername(), username) || !Objects.equals(user.getPassword(), reqUser.getPassword())){
             log.info("账号密码错误...");
             return new Result(400);

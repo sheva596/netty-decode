@@ -4,12 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * @ProjectName: jnatest
- * @Package: cn.callback.com.centerm.decode.pojo
- * @ClassName: RequestBody
  * @Author: jerry
- * @Description: ${description}
- * @Date: 20-3-4 上午10:17
  * @Version: 1.0
  */
 @Setter

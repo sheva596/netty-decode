@@ -16,6 +16,9 @@ import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author Sheva
  * @date 2020/4/20 10:18
@@ -33,11 +36,24 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private Response sendInfoResp = new Response();
 
+    private AtomicInteger connectNum;
+
+    public HttpServerHandler(AtomicInteger connectNum){
+        this.connectNum = connectNum;
+    }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpRequest httpRequest = (FullHttpRequest) msg;
         String ret = "";
 
+        String clientIP = httpRequest.headers().get("X-Forwarded-For");
+        if (clientIP == null) {
+            InetSocketAddress insocket = (InetSocketAddress) ctx.channel()
+                    .remoteAddress();
+            clientIP = insocket.getAddress().getHostAddress();
+        }
+        log.info("客户端ip为：　" + clientIP);
         try{
             String uri = httpRequest.uri();
             String data = httpRequest.content().toString(CharsetUtil.UTF_8);
@@ -84,6 +100,22 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
         }finally {
             httpRequest.release();
         }
+    }
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelRegistered(ctx);
+//        if (connectNum.incrementAndGet() % 100 == 0){
+            log.info("当前连接数： " + connectNum.incrementAndGet());
+//        }
+    }
+
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelUnregistered(ctx);
+//        if (connectNum.decrementAndGet() % 100 == 0){
+            log.info("当前连接数: " + connectNum.decrementAndGet());
+//        }
     }
 
     private void response(String data, ChannelHandlerContext ctx, HttpResponseStatus status){

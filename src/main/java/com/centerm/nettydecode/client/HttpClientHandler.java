@@ -18,12 +18,9 @@ import org.slf4j.LoggerFactory;
 
 @Slf4j
 public class HttpClientHandler extends ChannelInboundHandlerAdapter {
-
-
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        FullHttpResponse httpResponse = (FullHttpResponse)msg;
-
+        FullHttpResponse httpResponse = (FullHttpResponse) msg;
         ByteBuf content = httpResponse.content();
         String resp = content.toString(CharsetUtil.UTF_8);
         JSONObject object = JSONObject.parseObject(resp);
