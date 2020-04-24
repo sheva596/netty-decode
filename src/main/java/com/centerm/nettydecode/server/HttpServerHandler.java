@@ -1,9 +1,14 @@
 package com.centerm.nettydecode.server;
 
 import com.alibaba.fastjson.JSONObject;
+import com.centerm.nettydecode.aop.log.Log;
 import com.centerm.nettydecode.constant.Constants;
+import com.centerm.nettydecode.dao.SysDao;
+import com.centerm.nettydecode.pojo.ReqRecord;
 import com.centerm.nettydecode.pojo.Response;
 import com.centerm.nettydecode.pojo.ResponseBody;
+import com.centerm.nettydecode.pojo.SysLog;
+import com.centerm.nettydecode.service.SysService;
 import com.eidlink.idocr.sdk.constants.PublicParam;
 import com.eidlink.idocr.sdk.pojo.request.IdCardCheckParam;
 import com.eidlink.idocr.sdk.pojo.result.CommonResult;
@@ -12,12 +17,14 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import java.net.InetSocketAddress;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Sheva
@@ -36,16 +43,35 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private Response sendInfoResp = new Response();
 
-    private AtomicInteger connectNum;
+    @Autowired
+    private SysService sysService;
 
-    public HttpServerHandler(AtomicInteger connectNum){
-        this.connectNum = connectNum;
+
+    private static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+
+    @Override
+    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+        channels.add(ctx.channel());
+        log.info("在线连接数： " + channels.size());
+        log.info("管道id： " + ctx.channel().id());
+    }
+
+    @Override
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        log.info("管道id： " + ctx.channel().id());
+        log.info("在线连接数： " + channels.size());
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpRequest httpRequest = (FullHttpRequest) msg;
         String ret = "";
+        ReqRecord reqRecord = new ReqRecord();
+        Long begin = System.currentTimeMillis();
 
         String clientIP = httpRequest.headers().get("X-Forwarded-For");
         if (clientIP == null) {
@@ -54,6 +80,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             clientIP = insocket.getAddress().getHostAddress();
         }
         log.info("客户端ip为：　" + clientIP);
+        reqRecord.setIp(clientIP);
         try{
             String uri = httpRequest.uri();
             String data = httpRequest.content().toString(CharsetUtil.UTF_8);
@@ -65,7 +92,18 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             }
             if (HttpMethod.GET.equals(method)){
                 log.info("客户端请求数据内容： " + data);
+                reqRecord.setReqData(data.getBytes());
                 JSONObject object = JSONObject.parseObject(data);
+                log.info(object.toJSONString());
+                String sn = object.getString("sn");
+                log.info("sn: " + sn);
+//                Long terId = sysService.findBySn(sn);
+//                log.info("   " +terId);
+//                if (null == terId){
+//                    sysService.addTerminal(sn);
+//                }else{
+//                    sysService.updateReqTimes(terId);
+//                }
                 String reqId = object.getJSONObject("body").getString("req_data");
                 EidlinkService.initBasicInfo(ip, port, cid, appId, appKey);
                 PublicParam publicParam = new PublicParam();
@@ -87,6 +125,11 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                 sendInfoResp.setBody(body);
                 ret = JSONObject.toJSONString(sendInfoResp);
                 log.info("向客户端发送的数据: " + ret);
+                reqRecord.setRspData(ret.getBytes());
+                reqRecord.setExecuteTime(System.currentTimeMillis() - begin);
+                reqRecord.setSn(sn);
+                log.info(reqRecord.toString());
+//                sysService.addReqRecord(reqRecord);
                 response(ret, ctx, HttpResponseStatus.OK);
             }
             if (HttpMethod.POST.equals(method)){
@@ -96,26 +139,16 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                 //TODO
             }
         }catch (Exception e){
-            log.error("服务器处理失败...");
-        }finally {
+            e.printStackTrace();
+        }
+        finally {
             httpRequest.release();
         }
     }
 
     @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelRegistered(ctx);
-//        if (connectNum.incrementAndGet() % 100 == 0){
-            log.info("当前连接数： " + connectNum.incrementAndGet());
-//        }
-    }
-
-    @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelUnregistered(ctx);
-//        if (connectNum.decrementAndGet() % 100 == 0){
-            log.info("当前连接数: " + connectNum.decrementAndGet());
-//        }
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.warn("管道id： " + ctx.channel().id(), "发生错误,  在线连接数： " + channels.size());
     }
 
     private void response(String data, ChannelHandlerContext ctx, HttpResponseStatus status){

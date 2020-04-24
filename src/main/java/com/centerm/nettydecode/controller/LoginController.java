@@ -1,9 +1,11 @@
 package com.centerm.nettydecode.controller;
 
+import com.centerm.nettydecode.aop.log.Log;
 import com.centerm.nettydecode.pojo.Result;
 import com.centerm.nettydecode.pojo.User;
 import com.centerm.nettydecode.service.UserService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,6 +32,8 @@ public class LoginController {
     private UserService userService;
 
     @CrossOrigin
+    @ApiOperation("用户登陆")
+    @Log("用户登陆")
     @PostMapping("api/login")
     @ResponseBody
     public Result login(@RequestBody User reqUser){
@@ -42,6 +46,7 @@ public class LoginController {
             return new Result(400);
         }
         log.info("登录成功...");
+
         return new Result(200);
     }
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.centerm.nettydecode.dao.SysDao">
+    <insert id="saveSysLog" parameterType="com.centerm.nettydecode.pojo.SysLog">
+        INSERT INTO admin.log(username, request_ip, description, params, log_type, exception_detail, method, execute_time)
+        VALUES(#{username}, #{reqIp}, #{description}, #{params}, #{logType}, #{exceptionDetail}, #{method}, #{executeTime})
+    </insert>
+
+    <select id="findBySn" parameterType="string" resultType="long">
+        SELECT terminal.id
+        FROM admin.terminal
+        WHERE terminal.sn=#{sn}
+    </select>
+
+    <insert id="addTerminal" parameterType="string">
+        INSERT INTO admin.terminal(sn)
+        VALUES(#{sn})
+    </insert>
+
+    <insert id="addReqRecord" parameterType="com.centerm.nettydecode.pojo.ReqRecord">
+        INSERT INTO admin.req_record(sn, ip, req_data, rsp_data, execute_time)
+        VALUES(#{sn}, #{ip}, #{reqData}, #{rspData}, #{executeTime})
+    </insert>
+
+    <update id="updateReqTimes" parameterType="long">
+        UPDATE admin.terminal
+        SET req_times = req_times + 1
+        WHERE terminal.id=#{id}
+    </update>
+
+</mapper>

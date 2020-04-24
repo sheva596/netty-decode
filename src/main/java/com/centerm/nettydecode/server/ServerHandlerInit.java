@@ -23,6 +23,6 @@ public class ServerHandlerInit extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("requestDecode", new HttpRequestDecoder());
         pipeline.addLast("objectAggregator", new HttpObjectAggregator(1024));
         pipeline.addLast("contentCompressor", new HttpContentCompressor());
-        pipeline.addLast("httpServerHandler", new HttpServerHandler(new AtomicInteger(0)));
+        pipeline.addLast("httpServerHandler", new HttpServerHandler());
     }
 }
