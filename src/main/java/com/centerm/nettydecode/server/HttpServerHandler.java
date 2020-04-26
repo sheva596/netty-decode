@@ -1,13 +1,10 @@
 package com.centerm.nettydecode.server;
 
 import com.alibaba.fastjson.JSONObject;
-import com.centerm.nettydecode.aop.log.Log;
 import com.centerm.nettydecode.constant.Constants;
-import com.centerm.nettydecode.dao.SysDao;
 import com.centerm.nettydecode.pojo.ReqRecord;
 import com.centerm.nettydecode.pojo.Response;
 import com.centerm.nettydecode.pojo.ResponseBody;
-import com.centerm.nettydecode.pojo.SysLog;
 import com.centerm.nettydecode.service.SysService;
 import com.eidlink.idocr.sdk.constants.PublicParam;
 import com.eidlink.idocr.sdk.pojo.request.IdCardCheckParam;
@@ -24,6 +21,7 @@ import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.PostConstruct;
 import java.net.InetSocketAddress;
 
 /**
@@ -31,23 +29,23 @@ import java.net.InetSocketAddress;
  * @date 2020/4/20 10:18
  * @description
  */
-
 @Slf4j
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
-    String ip = "testnidocr.eidlink.com";
-    int port = 8080;
-    String cid = "1421800";
-    String appId = "TESTID20200224170526";
-    String appKey = "77BAA0434BE6B8AF812356850AC3C3ED";
-
     private Response sendInfoResp = new Response();
+    private static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     @Autowired
-    private SysService sysService;
+    SysService sysService;
+    private static HttpServerHandler mServerHandler;
 
 
-    private static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    @PostConstruct
+    public void init() {
+        mServerHandler = this;
+        mServerHandler.sysService = this.sysService;
+    }
+
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
@@ -81,31 +79,31 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
         }
         log.info("客户端ip为：　" + clientIP);
         reqRecord.setIp(clientIP);
-        try{
+        try {
             String uri = httpRequest.uri();
             String data = httpRequest.content().toString(CharsetUtil.UTF_8);
             HttpMethod method = httpRequest.method();
-            if (!"/query".equalsIgnoreCase(uri)){
+            if (!"/query".equalsIgnoreCase(uri)) {
                 ret = "非法请求路径：" + uri;
                 response(ret, ctx, HttpResponseStatus.BAD_REQUEST);
                 return;
             }
-            if (HttpMethod.GET.equals(method)){
-                log.info("客户端请求数据内容： " + data);
+            if (HttpMethod.GET.equals(method)) {
                 reqRecord.setReqData(data.getBytes());
                 JSONObject object = JSONObject.parseObject(data);
                 log.info(object.toJSONString());
                 String sn = object.getString("sn");
-                log.info("sn: " + sn);
-//                Long terId = sysService.findBySn(sn);
-//                log.info("   " +terId);
-//                if (null == terId){
-//                    sysService.addTerminal(sn);
-//                }else{
-//                    sysService.updateReqTimes(terId);
+                log.info("客户端请求数据内容： " + object.toJSONString());
+//                log.info("sysService: " + mServerHandler.sysService.getClass());
+//                Long terId = mServerHandler.sysService.findBySn(sn);
+//                log.info("   " + terId);
+//                if (null == terId) {
+//                    mServerHandler.sysService.addTerminal(sn);
+//                } else {
+//                    mServerHandler.sysService.updateReqTimes(terId);
 //                }
                 String reqId = object.getJSONObject("body").getString("req_data");
-                EidlinkService.initBasicInfo(ip, port, cid, appId, appKey);
+                EidlinkService.initBasicInfo(Constants.IP, Constants.PORT, Constants.CID, Constants.APPID, Constants.APPKEY);
                 PublicParam publicParam = new PublicParam();
                 IdCardCheckParam idCardCheckParam = new IdCardCheckParam(publicParam, reqId);
                 CommonResult result = EidlinkService.idCardCheck(idCardCheckParam);
@@ -129,19 +127,19 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                 reqRecord.setExecuteTime(System.currentTimeMillis() - begin);
                 reqRecord.setSn(sn);
                 log.info(reqRecord.toString());
-//                sysService.addReqRecord(reqRecord);
+//                mServerHandler.sysService.addReqRecord(reqRecord);
+//                SpringContextUtil.destroy();
                 response(ret, ctx, HttpResponseStatus.OK);
             }
-            if (HttpMethod.POST.equals(method)){
+            if (HttpMethod.POST.equals(method)) {
                 //TODO
             }
-            if (HttpMethod.PUT.equals(method)){
+            if (HttpMethod.PUT.equals(method)) {
                 //TODO
             }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        finally {
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        } finally {
             httpRequest.release();
         }
     }
@@ -151,7 +149,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
         log.warn("管道id： " + ctx.channel().id(), "发生错误,  在线连接数： " + channels.size());
     }
 
-    private void response(String data, ChannelHandlerContext ctx, HttpResponseStatus status){
+    private void response(String data, ChannelHandlerContext ctx, HttpResponseStatus status) {
         FullHttpResponse resp = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(data, CharsetUtil.UTF_8));
         resp.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain;charset=UTF-8");
         ctx.writeAndFlush(resp).addListener(ChannelFutureListener.CLOSE);

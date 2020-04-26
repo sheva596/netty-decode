@@ -34,7 +34,7 @@ public class LogAspect {
     private SysService sysService;
 
 
-    public LogAspect(SysService sysService){
+    public LogAspect(SysService sysService) {
         this.sysService = sysService;
     }
 
@@ -42,10 +42,11 @@ public class LogAspect {
      * 配置切入点
      */
     @Pointcut("@annotation(com.centerm.nettydecode.aop.log.Log)")
-    public void logPointcut(){}
+    public void logPointcut() {
+    }
 
     @Around("logPointcut()")
-    public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable{
+    public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         Object result;
         long beginTime = System.currentTimeMillis();
         result = joinPoint.proceed();
@@ -56,15 +57,14 @@ public class LogAspect {
 
     /**
      * 配置异常通知
-     *
      * @param joinPoint join point for advice
-     * @param e exception
+     * @param e         exception
      */
     @AfterThrowing(pointcut = "logPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        SysLog errLog = new SysLog();;
+        SysLog errLog = new SysLog();
         errLog.setExceptionDetail(ThrowableUtil.getStackTrace(e).getBytes());
         HttpServletRequest request = RequestHolder.getHttpServletRequest();
         errLog.setReqIp(StringUtils.getIp(request));
@@ -76,6 +76,7 @@ public class LogAspect {
         errLog.setDescription(method.getAnnotation(com.centerm.nettydecode.aop.log.Log.class).value());
         sysService.saveSysLog(errLog);
     }
+
     private void saveLog(ProceedingJoinPoint joinPoint, long time) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
@@ -100,7 +101,6 @@ public class LogAspect {
         HttpServletRequest request = RequestHolder.getHttpServletRequest();
         // 设置IP地址
         sysLog.setReqIp(StringUtils.getIp(request));
-
         //设置级别和操作名称
         sysLog.setLogType("INFO");
         sysLog.setDescription(method.getAnnotation(com.centerm.nettydecode.aop.log.Log.class).value());

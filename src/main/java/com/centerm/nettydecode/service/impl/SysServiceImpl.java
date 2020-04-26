@@ -19,6 +19,7 @@ public class SysServiceImpl implements SysService {
 
     @Autowired
     private SysDao sysDao;
+
     @Override
     public void saveSysLog(SysLog sysLog) {
         sysDao.saveSysLog(sysLog);

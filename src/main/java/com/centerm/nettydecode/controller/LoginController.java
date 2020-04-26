@@ -31,6 +31,7 @@ public class LoginController {
     @Autowired
     private UserService userService;
 
+
     @CrossOrigin
     @ApiOperation("用户登陆")
     @Log("用户登陆")
@@ -45,10 +46,6 @@ public class LoginController {
             log.info("账号密码错误...");
             return new Result(400);
         }
-        log.info("登录成功...");
-
         return new Result(200);
     }
-
-
 }

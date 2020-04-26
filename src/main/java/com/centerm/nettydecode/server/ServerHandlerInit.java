@@ -1,5 +1,4 @@
 package com.centerm.nettydecode.server;
-
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -7,8 +6,7 @@ import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Sheva

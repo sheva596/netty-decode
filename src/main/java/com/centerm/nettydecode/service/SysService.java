@@ -2,6 +2,7 @@ package com.centerm.nettydecode.service;
 
 import com.centerm.nettydecode.pojo.ReqRecord;
 import com.centerm.nettydecode.pojo.SysLog;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Sheva

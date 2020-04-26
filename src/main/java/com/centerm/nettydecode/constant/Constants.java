@@ -26,6 +26,12 @@ public class Constants {
      * 测试身份证数据
      */
     public static final String CARD_INFO_TEST = "00014845010807100000000000067777eed1e76e59eb123456420f9a520b8c269000";
-
-
+    /**
+     * 解码参数
+     */
+    public static String IP = "testnidocr.eidlink.com";
+    public static int PORT = 8080;
+    public static String CID = "1421800";
+    public static String APPID = "TESTID20200224170526";
+    public static String APPKEY = "77BAA0434BE6B8AF812356850AC3C3ED";
 }

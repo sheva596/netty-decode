@@ -8,6 +8,10 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * @author Sheva
@@ -22,6 +26,8 @@ public class HttpServer {
 
     public static EventLoopGroup group = new NioEventLoopGroup();
     public static ServerBootstrap serverBootstrap = new ServerBootstrap();
+
+    @PostConstruct
     public void start() throws Exception {
         log.info("服务启动...");
         try{

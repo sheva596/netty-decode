@@ -8,9 +8,9 @@
     </insert>
 
     <select id="findBySn" parameterType="string" resultType="long">
-        SELECT terminal.id
+        SELECT admin.terminal.id
         FROM admin.terminal
-        WHERE terminal.sn=#{sn}
+        WHERE admin.terminal.sn=#{sn}
     </select>
 
     <insert id="addTerminal" parameterType="string">
