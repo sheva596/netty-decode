@@ -2,9 +2,7 @@ package com.centerm.nettydecode.aspect;
 
 import com.centerm.nettydecode.pojo.SysLog;
 import com.centerm.nettydecode.service.SysService;
-import com.centerm.nettydecode.utils.RequestHolder;
-import com.centerm.nettydecode.utils.StringUtils;
-import com.centerm.nettydecode.utils.ThrowableUtil;
+import com.centerm.nettydecode.utils.LogUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -65,9 +63,9 @@ public class LogAspect {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         SysLog errLog = new SysLog();
-        errLog.setExceptionDetail(ThrowableUtil.getStackTrace(e).getBytes());
-        HttpServletRequest request = RequestHolder.getHttpServletRequest();
-        errLog.setReqIp(StringUtils.getIp(request));
+        errLog.setExceptionDetail(LogUtils.getStackTrace(e).getBytes());
+        HttpServletRequest request = LogUtils.getHttpServletRequest();
+        errLog.setReqIp(LogUtils.getIp(request));
         errLog.setUsername("admin");
         errLog.setLogType("ERROR");
         String className = joinPoint.getTarget().getClass().getName();
@@ -98,9 +96,9 @@ public class LogAspect {
             sysLog.setParams(params);
         }
         // 获取request
-        HttpServletRequest request = RequestHolder.getHttpServletRequest();
+        HttpServletRequest request = LogUtils.getHttpServletRequest();
         // 设置IP地址
-        sysLog.setReqIp(StringUtils.getIp(request));
+        sysLog.setReqIp(LogUtils.getIp(request));
         //设置级别和操作名称
         sysLog.setLogType("INFO");
         sysLog.setDescription(method.getAnnotation(com.centerm.nettydecode.aop.log.Log.class).value());

@@ -50,7 +50,7 @@ public class DruidConfig {
     public ServletRegistrationBean statViewServlet(){
         ServletRegistrationBean bean =new ServletRegistrationBean(new StatViewServlet() , "/druid/*");
         Map<String,String> initParams=new HashMap<>();
-        initParams.put("loginUsername", "root");
+        initParams.put("loginUsername", "admin");
         initParams.put("loginPassword", "admin");
         //默认就是允许所有访问。
         initParams.put("allow", "");

@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +59,7 @@ public class MybatisConfig {
         bean.setMapperLocations(resolver.getResources("classpath*:mapper/*.xml"));
         return bean.getObject();
     }
+
     /**
      * 配置事务管理器
      */

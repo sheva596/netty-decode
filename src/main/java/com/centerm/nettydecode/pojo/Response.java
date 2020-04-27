@@ -1,15 +1,12 @@
 package com.centerm.nettydecode.pojo;
 
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 /**
  * @author Sheva
  * @version 1.0
  * @date 2020/3/3 下午6:43
  */
-@Setter
-@Getter
+@Data
 public class Response {
     /**
      * 响应编号唯一编码（Sign Number）
@@ -35,6 +32,4 @@ public class Response {
      * 响应的主体，包含响应的数据
      */
     private ResponseBody body;
-
-
 }

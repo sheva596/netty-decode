@@ -1,19 +1,11 @@
 package com.centerm.nettydecode.pojo;
 
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 /**
- * @ProjectName: jnatest
- * @Package: cn.callback.com.centerm.decode.pojo
- * @ClassName: ResponseBody
  * @Author: jerry
- * @Description: ${description}
  * @Date: 20-3-4 上午10:18
- * @Version: 1.0
  */
-@Getter
-@Setter
+@Data
 public class ResponseBody {
     /**
      * 业务类型

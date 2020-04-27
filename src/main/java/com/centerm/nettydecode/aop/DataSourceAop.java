@@ -39,7 +39,7 @@ public class DataSourceAop {
      */
     @Pointcut("execution(* com.centerm.nettydecode.service.impl..*.find*(..))"
             + "|| execution(* com.centerm.nettydecode.service.impl..*.get*(..))")
-    public void readonlyPointcut(){
+    public void readonlyPointcut() {
 
     }
 
@@ -50,12 +50,13 @@ public class DataSourceAop {
             + "|| execution(* com.centerm.nettydecode.service.impl..*.update*(..))"
             + "|| execution(* com.centerm.nettydecode.service.impl..*.insert*(..))"
             + "|| execution(* com.centerm.nettydecode.service.impl..*.add*(..))")
-    public void writePointcut(){
+    public void writePointcut() {
 
     }
 
     /**
      * 具体切入
+     *
      * @param joinPoint
      */
     @Before("writePointcut()")
@@ -67,11 +68,11 @@ public class DataSourceAop {
         if (args != null && args.length > 0) {
             Object argument = args[0];
             BeanWrapper beanWrapper = new BeanWrapperImpl(argument);
-            log.info("主库 => " + signature.getMethod().getName());
+            log.info("主库 ===============> " + signature.getMethod().getName());
             //新增时设置创建时间
-            if(signature.getMethod().getName().contains("add")
+            if (signature.getMethod().getName().contains("add")
                     || signature.getMethod().getName().contains("save")
-                    || signature.getMethod().getName().contains("insert")){
+                    || signature.getMethod().getName().contains("insert")) {
                 // 设置创建时间和修改时间
                 if (beanWrapper.isWritableProperty(CREATE_DATE)) {
                     beanWrapper.setPropertyValue(CREATE_DATE, new Date());
@@ -83,14 +84,16 @@ public class DataSourceAop {
             }
         }
     }
+
     /**
      * 具体切入
+     *
      * @param joinPoint
      */
     @Before("readonlyPointcut()")
     public void setDataBaseSlave(JoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         DynamicDataSource.setDataBaseType(DynamicDataSource.DatabaseType.readonlyDataSource);
-        log.info("从库 => " + signature.getMethod().getName());
+        log.info("从库 ===============> " + signature.getMethod().getName());
     }
 }

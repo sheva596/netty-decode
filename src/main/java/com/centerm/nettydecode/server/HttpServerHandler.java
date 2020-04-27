@@ -1,6 +1,7 @@
 package com.centerm.nettydecode.server;
 
 import com.alibaba.fastjson.JSONObject;
+import com.centerm.nettydecode.aop.log.Log;
 import com.centerm.nettydecode.constant.Constants;
 import com.centerm.nettydecode.pojo.ReqRecord;
 import com.centerm.nettydecode.pojo.Response;
@@ -21,6 +22,7 @@ import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.net.InetSocketAddress;
 
@@ -30,13 +32,14 @@ import java.net.InetSocketAddress;
  * @description
  */
 @Slf4j
+@Component
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private Response sendInfoResp = new Response();
     private static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     @Autowired
-    SysService sysService;
+    private SysService sysService;
     private static HttpServerHandler mServerHandler;
 
 
@@ -94,14 +97,12 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                 log.info(object.toJSONString());
                 String sn = object.getString("sn");
                 log.info("客户端请求数据内容： " + object.toJSONString());
-//                log.info("sysService: " + mServerHandler.sysService.getClass());
-//                Long terId = mServerHandler.sysService.findBySn(sn);
-//                log.info("   " + terId);
-//                if (null == terId) {
-//                    mServerHandler.sysService.addTerminal(sn);
-//                } else {
-//                    mServerHandler.sysService.updateReqTimes(terId);
-//                }
+                Long terId = mServerHandler.sysService.findBySn(sn);
+                if (null == terId) {
+                    mServerHandler.sysService.addTerminal(sn);
+                } else {
+                    mServerHandler.sysService.updateReqTimes(terId);
+                }
                 String reqId = object.getJSONObject("body").getString("req_data");
                 EidlinkService.initBasicInfo(Constants.IP, Constants.PORT, Constants.CID, Constants.APPID, Constants.APPKEY);
                 PublicParam publicParam = new PublicParam();
@@ -126,9 +127,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                 reqRecord.setRspData(ret.getBytes());
                 reqRecord.setExecuteTime(System.currentTimeMillis() - begin);
                 reqRecord.setSn(sn);
-                log.info(reqRecord.toString());
-//                mServerHandler.sysService.addReqRecord(reqRecord);
-//                SpringContextUtil.destroy();
+                mServerHandler.sysService.addReqRecord(reqRecord);
                 response(ret, ctx, HttpResponseStatus.OK);
             }
             if (HttpMethod.POST.equals(method)) {
@@ -143,6 +142,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             httpRequest.release();
         }
     }
+
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {

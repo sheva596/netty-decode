@@ -1,14 +1,11 @@
 package com.centerm.nettydecode.pojo;
 
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 /**
  * @Author: jerry
  * @Version: 1.0
  */
-@Setter
-@Getter
+@Data
 public class RequestBody {
     /**
      * 业务员类型

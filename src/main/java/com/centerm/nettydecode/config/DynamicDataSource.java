@@ -9,20 +9,20 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
  */
 public class DynamicDataSource extends AbstractRoutingDataSource {
 
-    public enum DatabaseType{
+    public enum DatabaseType {
         primaryDataSource,
         readonlyDataSource
     }
 
     private static final ThreadLocal<DatabaseType> contextHolder = new ThreadLocal<>();
 
-    public static void setDataBaseType(DatabaseType type){
+    public static void setDataBaseType(DatabaseType type) {
         contextHolder.set(type);
     }
 
-    public static DatabaseType getDataBaseType(){
+    public static DatabaseType getDataBaseType() {
         DatabaseType db = contextHolder.get();
-        if (db == null){
+        if (db == null) {
             db = DatabaseType.primaryDataSource;
         }
         return db;
@@ -36,7 +36,7 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     /**
      * 清理链接类型
      */
-    public static void clearDbType(){
+    public static void clearDbType() {
         contextHolder.remove();
     }
 }

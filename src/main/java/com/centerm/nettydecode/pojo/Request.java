@@ -1,15 +1,12 @@
 package com.centerm.nettydecode.pojo;
 
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 /**
  * @author Sheva
  * @version 1.0
  * @date 2020/3/3 下午6:45
  */
-@Getter
-@Setter
+@Data
 public class Request {
     /**
      * 请求编号唯一编码（Sign Number）
