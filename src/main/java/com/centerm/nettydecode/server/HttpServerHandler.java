@@ -1,11 +1,11 @@
 package com.centerm.nettydecode.server;
 
 import com.alibaba.fastjson.JSONObject;
-import com.centerm.nettydecode.aop.log.Log;
 import com.centerm.nettydecode.constant.Constants;
 import com.centerm.nettydecode.pojo.ReqRecord;
 import com.centerm.nettydecode.pojo.Response;
 import com.centerm.nettydecode.pojo.ResponseBody;
+import com.centerm.nettydecode.pojo.Terminal;
 import com.centerm.nettydecode.service.SysService;
 import com.eidlink.idocr.sdk.constants.PublicParam;
 import com.eidlink.idocr.sdk.pojo.request.IdCardCheckParam;
@@ -42,13 +42,11 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
     private SysService sysService;
     private static HttpServerHandler mServerHandler;
 
-
     @PostConstruct
     public void init() {
         mServerHandler = this;
         mServerHandler.sysService = this.sysService;
     }
-
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
@@ -97,11 +95,11 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                 log.info(object.toJSONString());
                 String sn = object.getString("sn");
                 log.info("客户端请求数据内容： " + object.toJSONString());
-                Long terId = mServerHandler.sysService.findBySn(sn);
-                if (null == terId) {
+                Terminal terminal = mServerHandler.sysService.findBySn(sn);
+                if (null == terminal) {
                     mServerHandler.sysService.addTerminal(sn);
                 } else {
-                    mServerHandler.sysService.updateReqTimes(terId);
+                    mServerHandler.sysService.updateReqTimes(terminal.getId());
                 }
                 String reqId = object.getJSONObject("body").getString("req_data");
                 EidlinkService.initBasicInfo(Constants.IP, Constants.PORT, Constants.CID, Constants.APPID, Constants.APPKEY);
@@ -137,12 +135,12 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                 //TODO
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
         } finally {
             httpRequest.release();
         }
     }
-
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {

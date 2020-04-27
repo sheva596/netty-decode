@@ -7,8 +7,8 @@
         VALUES(#{username}, #{reqIp}, #{description}, #{params}, #{logType}, #{exceptionDetail}, #{method}, #{executeTime})
     </insert>
 
-    <select id="findBySn" parameterType="string" resultType="long">
-        SELECT admin.terminal.id
+    <select id="findBySn" parameterType="string" resultType="com.centerm.nettydecode.pojo.Terminal">
+        SELECT admin.terminal.id, admin.terminal.sn
         FROM admin.terminal
         WHERE admin.terminal.sn=#{sn}
     </select>
@@ -23,7 +23,7 @@
         VALUES(#{sn}, #{ip}, #{reqData}, #{rspData}, #{executeTime})
     </insert>
 
-    <update id="updateReqTimes" parameterType="long">
+    <update id="updateReqTimes" parameterType="long" >
         UPDATE admin.terminal
         SET req_times = req_times + 1
         WHERE terminal.id=#{id}

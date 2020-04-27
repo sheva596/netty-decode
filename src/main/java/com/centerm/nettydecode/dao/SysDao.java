@@ -2,6 +2,7 @@ package com.centerm.nettydecode.dao;
 
 import com.centerm.nettydecode.pojo.ReqRecord;
 import com.centerm.nettydecode.pojo.SysLog;
+import com.centerm.nettydecode.pojo.Terminal;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -16,30 +17,27 @@ public interface SysDao {
      * @param sysLog
      */
     void saveSysLog(SysLog sysLog);
-
-
     /**
      * 添加设备信息
      * @param sn 设备sn号
      */
     void addTerminal(String sn);
-
     /**
      * 添加设备请求记录
      * @param reqRecord
      */
     void addReqRecord(ReqRecord reqRecord);
-
     /**
      * 通过sn号查找设备id
      * @param sn
      * @return
      */
-    Long findBySn(String sn);
+    Terminal findBySn(String sn);
 
     /**
      * 更新终端访问次数
-     * @param id 设备id
+     * @param id
+     * @return 成功与否
      */
-    void updateReqTimes(Long id);
+    Boolean updateReqTimes(Long id);
 }

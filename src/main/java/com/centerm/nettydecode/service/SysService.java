@@ -2,8 +2,7 @@ package com.centerm.nettydecode.service;
 
 import com.centerm.nettydecode.pojo.ReqRecord;
 import com.centerm.nettydecode.pojo.SysLog;
-import org.springframework.stereotype.Component;
-
+import com.centerm.nettydecode.pojo.Terminal;
 /**
  * @author Sheva
  * @date 2020/4/23 11:39
@@ -31,15 +30,16 @@ public interface SysService{
 
     /**
      * 更新请求次数
-     * @param id
+     * @param id 设备id
+     * @return
      */
-    void updateReqTimes(Long id);
+    Boolean updateReqTimes(Long id);
 
     /**
      * 根据sn查找设备id
      * @param sn
      * @return
      */
-    Long findBySn(String sn);
+    Terminal findBySn(String sn);
 
 }
