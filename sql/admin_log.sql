@@ -1,0 +1,1 @@
+INSERT INTO admin.log (id, create_time, description, username, params, request_ip, log_type, exception_detail, method, execute_time) VALUES (1, '2020-04-29 02:02:56', '用户登陆', 'admin', '  reqUser: User(id=0, username=admin, password=admin)', '0:0:0:0:0:0:0:1', 'INFO', null, 'com.centerm.nettydecode.controller.LoginController.login()', 1014);
