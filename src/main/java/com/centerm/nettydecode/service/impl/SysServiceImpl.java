@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,7 +19,6 @@ import java.util.concurrent.TimeUnit;
  * @date 2020/4/23 11:40
  * @description
  */
-
 @Service
 @Slf4j
 public class SysServiceImpl implements SysService {
@@ -72,8 +72,13 @@ public class SysServiceImpl implements SysService {
             Terminal terminal = sysDao.findBySn(sn);
             log.info("查询数据库数据：" + terminal);
             log.info("---------------------------------------");
-            operations.set(key, terminal, 1, TimeUnit.HOURS);
-            return terminal;
+            //如果数据库中也没有
+            if(null == terminal){
+                return null;
+            }else{
+                operations.set(key, terminal, 1, TimeUnit.HOURS);
+                return terminal;
+            }
         }
     }
 }

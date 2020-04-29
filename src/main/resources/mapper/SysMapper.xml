@@ -8,7 +8,7 @@
     </insert>
 
     <select id="findBySn" parameterType="string" resultType="com.centerm.nettydecode.pojo.Terminal">
-        SELECT admin.terminal.id, admin.terminal.sn
+        SELECT admin.terminal.*
         FROM admin.terminal
         WHERE admin.terminal.sn=#{sn}
     </select>
